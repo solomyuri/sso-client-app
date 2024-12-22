@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 import org.springframework.security.oauth2.client.web.DefaultReactiveOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
+import org.springframework.web.reactive.config.PathMatchConfigurer;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import io.netty.handler.logging.LogLevel;
@@ -18,18 +20,25 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 @Configuration
-public class AppConfig {
+public class AppConfig implements WebFluxConfigurer {
 
-	private final String baseUrl;
+	private final String BASE_URL;
+	private final String BASE_PATH;
 
 	public AppConfig(@Value("${keycloak.scheme}") String keycloakScheme, @Value("${keycloak.host}") String keycloakHost,
-			@Value("${keycloak.port}") String keycloakPort) {
-		this.baseUrl = String.format("%s://%s:%s", keycloakScheme, keycloakHost, keycloakPort);
+			@Value("${keycloak.port}") String keycloakPort, @Value("${spring.application.name}") String appName) {
+		this.BASE_URL = String.format("%s://%s:%s", keycloakScheme, keycloakHost, keycloakPort);
+		this.BASE_PATH = "/eapi/" + appName;
+	}
+
+	@Override
+	public void configurePathMatching(PathMatchConfigurer configurer) {
+		configurer.addPathPrefix(BASE_PATH, clazz -> true);
 	}
 
 	@Bean("WebClientAuth")
 	WebClient webClientAuth(WebClient.Builder builder) {
-		return builder.baseUrl(baseUrl)
+		return builder.baseUrl(BASE_URL)
 				.clientConnector(new ReactorClientHttpConnector(HttpClient.create()
 						.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
 								AdvancedByteBufFormat.TEXTUAL)))
@@ -46,7 +55,7 @@ public class AppConfig {
 
 		oauth2Filter.setDefaultClientRegistrationId("keycloak");
 
-		return builder.baseUrl(baseUrl)
+		return builder.baseUrl(BASE_URL)
 				.clientConnector(new ReactorClientHttpConnector(HttpClient.create()
 						.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
 								AdvancedByteBufFormat.TEXTUAL)))

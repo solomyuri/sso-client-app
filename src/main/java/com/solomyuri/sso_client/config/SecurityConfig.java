@@ -24,10 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SecurityConfig {
 
-	private final String[] permitList = { "/auth/token", "/auth/refresh", "/users" };
+	private final String[] permitList = { "/eapi/sso-client-app/auth/token",
+			"/eapi/sso-client-app//auth/refresh", "/eapi/sso-client-app/users" };
 
 	@Bean
-	SecurityWebFilterChain filterChain(ServerHttpSecurity http, AuthErrorHandler entryPoint) throws Exception {
+	SecurityWebFilterChain filterChain(ServerHttpSecurity http, AuthErrorHandler entryPoint) {
 
 		http.oauth2ResourceServer(
 				oAuth2 -> oAuth2.jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(jwtAuthenticationConverter())));
