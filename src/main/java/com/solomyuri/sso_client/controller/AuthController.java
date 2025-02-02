@@ -32,7 +32,7 @@ public class AuthController {
 	@PostMapping(path = "/refresh", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE })
 	public Mono<ResponseEntity<TokenResponse>> getAccessTokenByRefreshToken(RefreshTokenRequest requestDto) {
 
-		return keycloakClient.getAccessToken(requestDto.getRefreshToken()).map(dto -> ResponseEntity.ok(dto));
+		return keycloakClient.getAccessToken(requestDto.getRefresh_token()).map(dto -> ResponseEntity.ok(dto));
 	}
 
 }

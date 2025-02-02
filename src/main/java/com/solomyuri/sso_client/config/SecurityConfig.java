@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
 
 	private final String[] permitList = { "/eapi/sso-client-app/auth/token",
-			"/eapi/sso-client-app//auth/refresh", "/eapi/sso-client-app/users" };
+			"/eapi/sso-client-app/auth/refresh", "/eapi/sso-client-app/users" };
 
 	@Bean
 	SecurityWebFilterChain filterChain(ServerHttpSecurity http, AuthErrorHandler entryPoint) {
