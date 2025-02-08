@@ -22,65 +22,65 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
 @Configuration
 public class AppConfig implements WebFluxConfigurer {
 
-	private final String BASE_URL;
-	private final String BASE_PATH;
+    private final String BASE_URL;
+    private final String BASE_PATH;
 
-	public AppConfig(@Value("${keycloak.scheme}") String keycloakScheme, @Value("${keycloak.host}") String keycloakHost,
-			@Value("${keycloak.port}") String keycloakPort, @Value("${spring.application.name}") String appName) {
-		this.BASE_URL = String.format("%s://%s:%s", keycloakScheme, keycloakHost, keycloakPort);
-		this.BASE_PATH = "/eapi/" + appName;
-	}
+    public AppConfig(@Value("${keycloak.scheme}") String keycloakScheme, @Value("${keycloak.host}") String keycloakHost,
+            @Value("${keycloak.port}") String keycloakPort, @Value("${spring.application.name}") String appName) {
+	this.BASE_URL = String.format("%s://%s:%s", keycloakScheme, keycloakHost, keycloakPort);
+	this.BASE_PATH = "/eapi/" + appName;
+    }
 
-	@Override
-	public void configurePathMatching(PathMatchConfigurer configurer) {
-		configurer.addPathPrefix(BASE_PATH, clazz -> true);
-	}
+    @Override
+    public void configurePathMatching(PathMatchConfigurer configurer) {
+	configurer.addPathPrefix(BASE_PATH, clazz -> true);
+    }
 
-	@Bean("WebClientAuth")
-	WebClient webClientAuth(WebClient.Builder builder) {
-		return builder.baseUrl(BASE_URL)
-				.clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-						.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
-								AdvancedByteBufFormat.TEXTUAL)))
-				.codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-						.maxInMemorySize(1024 * 1024 * 10))
-				.build();
-	}
+    @Bean("WebClientAuth")
+    WebClient webClientAuth(WebClient.Builder builder) {
+	return builder.baseUrl(BASE_URL)
+	        .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
+	                .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
+	                        AdvancedByteBufFormat.TEXTUAL)))
+	        .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
+	                .maxInMemorySize(1024 * 1024 * 10))
+	        .build();
+    }
 
-	@Bean("WebClient")
-	WebClient webClient(WebClient.Builder builder, ReactiveOAuth2AuthorizedClientManager auth2AuthorizedClientManager) {
+    @Bean("WebClient")
+    WebClient webClient(WebClient.Builder builder,
+                        ReactiveOAuth2AuthorizedClientManager auth2AuthorizedClientManager) {
 
-		ServerOAuth2AuthorizedClientExchangeFilterFunction oauth2Filter = new ServerOAuth2AuthorizedClientExchangeFilterFunction(
-				auth2AuthorizedClientManager);
+	ServerOAuth2AuthorizedClientExchangeFilterFunction oauth2Filter = new ServerOAuth2AuthorizedClientExchangeFilterFunction(
+	        auth2AuthorizedClientManager);
 
-		oauth2Filter.setDefaultClientRegistrationId("keycloak");
+	oauth2Filter.setDefaultClientRegistrationId("keycloak");
 
-		return builder.baseUrl(BASE_URL)
-				.clientConnector(new ReactorClientHttpConnector(HttpClient.create()
-						.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
-								AdvancedByteBufFormat.TEXTUAL)))
-				.codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-						.maxInMemorySize(1024 * 1024 * 10))
-				.filter(oauth2Filter)
-				.build();
-	}
+	return builder.baseUrl(BASE_URL)
+	        .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
+	                .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
+	                        AdvancedByteBufFormat.TEXTUAL)))
+	        .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
+	                .maxInMemorySize(1024 * 1024 * 10))
+	        .filter(oauth2Filter)
+	        .build();
+    }
 
-	@Bean
-	ReactiveOAuth2AuthorizedClientManager auth2AuthorizedClientManager(
-			ReactiveClientRegistrationRepository registrationRepository,
-			ServerOAuth2AuthorizedClientRepository clientRepository) {
+    @Bean
+    ReactiveOAuth2AuthorizedClientManager auth2AuthorizedClientManager(ReactiveClientRegistrationRepository registrationRepository,
+                                                                       ServerOAuth2AuthorizedClientRepository clientRepository) {
 
-		ReactiveOAuth2AuthorizedClientProvider auth2AuthorizedClientProvider = ReactiveOAuth2AuthorizedClientProviderBuilder
-				.builder()
-				.clientCredentials()
-				.build();
+	ReactiveOAuth2AuthorizedClientProvider auth2AuthorizedClientProvider = ReactiveOAuth2AuthorizedClientProviderBuilder
+	        .builder()
+	        .clientCredentials()
+	        .build();
 
-		DefaultReactiveOAuth2AuthorizedClientManager authorizedClientManager = new DefaultReactiveOAuth2AuthorizedClientManager(
-				registrationRepository, clientRepository);
+	DefaultReactiveOAuth2AuthorizedClientManager authorizedClientManager = new DefaultReactiveOAuth2AuthorizedClientManager(
+	        registrationRepository, clientRepository);
 
-		authorizedClientManager.setAuthorizedClientProvider(auth2AuthorizedClientProvider);
+	authorizedClientManager.setAuthorizedClientProvider(auth2AuthorizedClientProvider);
 
-		return authorizedClientManager;
-	}
+	return authorizedClientManager;
+    }
 
 }

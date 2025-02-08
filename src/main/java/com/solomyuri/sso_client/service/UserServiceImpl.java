@@ -10,6 +10,7 @@ import com.solomyuri.sso_client.client.KeycloakClient;
 import com.solomyuri.sso_client.exception.ApplicationException;
 import com.solomyuri.sso_client.mapper.RoleForChangeMapper;
 import com.solomyuri.sso_client.model.ChangeRoleRequest;
+import com.solomyuri.sso_client.model.EditUserRequest;
 import com.solomyuri.sso_client.model.RegistrationRequest;
 import com.solomyuri.sso_client.model.keycloak.CreateUserRequest;
 import com.solomyuri.sso_client.model.keycloak.RoleForChange;
@@ -55,6 +56,14 @@ public class UserServiceImpl implements UserService {
 			default -> Mono.error(new ApplicationException("invalid action", HttpStatus.BAD_REQUEST));
 			};
 		});
+	}
+
+	@Override
+	public Mono<ResponseEntity<String>> editUser(String username, EditUserRequest request) {
+
+	    return keycloakClient.getUser(username)
+	            .flatMap(userInfo -> keycloakClient.editUser(userInfo.getId(), request)
+	                    .map(status -> ResponseEntity.status(status).body("EDITED")));
 	}
 
 }

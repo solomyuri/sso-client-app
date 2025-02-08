@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 
+import com.solomyuri.sso_client.model.EditUserRequest;
 import com.solomyuri.sso_client.model.TokenRequest;
 import com.solomyuri.sso_client.model.keycloak.CreateUserRequest;
 import com.solomyuri.sso_client.model.keycloak.RoleForChange;
@@ -22,5 +23,6 @@ public interface KeycloakClient {
 	Mono<HttpStatus> deleteUser(UUID userId);
 	Mono<HttpStatus> addRoles(UUID userId, List<RoleForChange> roles);
 	Mono<HttpStatus> removeRoles(UUID userId, List<RoleForChange> roles);
+	Mono<HttpStatus> editUser(UUID userId, EditUserRequest request);
 	
 }
