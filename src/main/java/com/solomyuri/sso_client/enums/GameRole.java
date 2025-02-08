@@ -9,8 +9,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum GameRole {
 
-	ADMIN(UUID.fromString("fe946e08-f5af-4f5e-bccc-56ed21a0ddd9"), "game-service-admin");
+    USER(UUID.fromString("2dae6c04-9a65-43b9-a35c-334a34516f5c"), "game-service-user"),
+    ADMIN(UUID.fromString("97466c54-cc4b-4931-914d-c458a5b58b5c"), "game-service-admin");
 
-	private final UUID id;
-	private final String name;
+    private final UUID id;
+    private final String name;
 }

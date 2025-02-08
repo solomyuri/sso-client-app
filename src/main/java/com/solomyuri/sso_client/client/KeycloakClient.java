@@ -16,13 +16,20 @@ import reactor.core.publisher.Mono;
 
 public interface KeycloakClient {
 
-	Mono<TokenResponse> getAccessToken(TokenRequest requestDto);
-	Mono<TokenResponse> getAccessToken(String refreshToken);
-	Mono<HttpStatus> createUser(CreateUserRequest requestDto);
-	Mono<UserInfoResponse> getUser(String username);
-	Mono<HttpStatus> deleteUser(UUID userId);
-	Mono<HttpStatus> addRoles(UUID userId, List<RoleForChange> roles);
-	Mono<HttpStatus> removeRoles(UUID userId, List<RoleForChange> roles);
-	Mono<HttpStatus> editUser(UUID userId, EditUserRequest request);
-	
+    Mono<TokenResponse> getAccessToken(TokenRequest requestDto);
+
+    Mono<TokenResponse> getAccessToken(String refreshToken);
+
+    Mono<HttpStatus> createUser(CreateUserRequest requestDto);
+
+    Mono<UserInfoResponse> getUser(String username);
+
+    Mono<HttpStatus> deleteUser(UUID userId);
+
+    Mono<HttpStatus> addRoles(UUID userId, String clientId, List<RoleForChange> roles);
+
+    Mono<HttpStatus> removeRoles(UUID userId, String clientId, List<RoleForChange> roles);
+
+    Mono<HttpStatus> editUser(UUID userId, EditUserRequest request);
+
 }

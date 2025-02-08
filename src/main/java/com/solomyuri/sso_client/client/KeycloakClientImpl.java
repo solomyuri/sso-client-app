@@ -134,11 +134,11 @@ public class KeycloakClientImpl implements KeycloakClient {
     }
 
     @Override
-    public Mono<HttpStatus> addRoles(UUID userId, List<RoleForChange> roles) {
+    public Mono<HttpStatus> addRoles(UUID userId, String clientId, List<RoleForChange> roles) {
 
 	return webClient.post()
 	        .uri(uriBuilder -> uriBuilder.path(USERS_PATH)
-	                .pathSegment(userId.toString(), "role-mappings", "realm")
+	                .pathSegment(userId.toString(), "role-mappings", "clients", clientId)
 	                .build())
 	        .bodyValue(roles)
 	        .exchangeToMono(response -> {
@@ -150,11 +150,11 @@ public class KeycloakClientImpl implements KeycloakClient {
     }
 
     @Override
-    public Mono<HttpStatus> removeRoles(UUID userId, List<RoleForChange> roles) {
+    public Mono<HttpStatus> removeRoles(UUID userId, String clientId, List<RoleForChange> roles) {
 
 	return webClient.method(HttpMethod.DELETE)
 	        .uri(uriBuilder -> uriBuilder.path(USERS_PATH)
-	                .pathSegment(userId.toString(), "role-mappings", "realm")
+	                .pathSegment(userId.toString(), "role-mappings", "clients", clientId)
 	                .build())
 	        .bodyValue(roles)
 	        .exchangeToMono(response -> {
