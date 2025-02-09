@@ -105,16 +105,15 @@ public class KeycloakClientImpl implements KeycloakClient {
     }
 
     @Override
-    public Mono<UserInfoResponse> getUser(String username) {
+    public Mono<List<UserInfoResponse>> getUser(String username) {
 
 	return webClient.get()
 	        .uri(uriBuilder -> uriBuilder.path(USERS_PATH).queryParam(USERNAME, username).build())
 	        .exchangeToMono(response -> {
 	            if (response.statusCode().is2xxSuccessful())
 		        return response.bodyToFlux(UserInfoResponse.class)
-		                .next()
-		                .switchIfEmpty(
-		                        Mono.error(new ApplicationException("user not found", HttpStatus.NOT_FOUND)));
+		                .filter(userInfo -> username.toLowerCase().equals(userInfo.getUsername().toLowerCase()))
+		                .collectList();
 	            else
 		        return handleErrorResponse(response, "GET", USERS_PATH).then(Mono.empty());
 	        });

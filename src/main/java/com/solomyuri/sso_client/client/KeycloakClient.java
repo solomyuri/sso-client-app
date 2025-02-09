@@ -22,7 +22,7 @@ public interface KeycloakClient {
 
     Mono<HttpStatus> createUser(CreateUserRequest requestDto);
 
-    Mono<UserInfoResponse> getUser(String username);
+    Mono<List<UserInfoResponse>> getUser(String username);
 
     Mono<HttpStatus> deleteUser(UUID userId);
 
